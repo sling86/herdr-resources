@@ -230,9 +230,11 @@ function sessionTree(terminals, procs, cpu, spaces, now) {
   }
   // A worker sits under the terminal that started it (hc `parent`), as Herdr's agent list shows it,
   // not as a session of its own in the worker's space. A parent that has gone leaves it a root.
-  const under = (a, p) => { for (let x = p; x; x = terms.get(x)?.t.parent) if (x === a) return true; return false; };
+  // `hc-pane run` panes (dev servers a worker opened) carry no hc parent, only the `hc-pane.owner` label.
+  const parentOf = (t) => t.parent ?? t.labels?.["hc-pane.owner"];
+  const under = (a, p) => { for (let x = p; x; x = parentOf(terms.get(x)?.t ?? {})) if (x === a) return true; return false; };
   for (const [address, e] of terms) {
-    const p = e.t.parent;
+    const p = parentOf(e.t);
     if (p && terms.has(p) && !under(address, p)) terms.get(p).workers.push(address);
   }
   const node = (address) => {
@@ -250,7 +252,8 @@ function sessionTree(terminals, procs, cpu, spaces, now) {
   };
   const bySpace = new Map();
   for (const [address, { t }] of terms) {
-    if (t.parent && terms.has(t.parent) && !under(address, t.parent)) continue;
+    const p = parentOf(t);
+    if (p && terms.has(p) && !under(address, p)) continue;
     const spaceId = t.labels?.["herdr.space"] ?? "background";
     const tabId = t.labels?.["herdr.tab"] ?? "background";
     const tabs = bySpace.get(spaceId) ?? new Map();

@@ -36,7 +36,7 @@ Top to bottom, on the theme's `surface`:
 ## How it behaves
 
 - **Statuses:** a space or terminal that's `working` shows Herdr's spinner (`mods/workspace-chrome/spinner.svg`, 10px, `working`, spinning every 900ms); `blocked` and `done` show a 6px dot in that status colour; `idle` shows nothing.
-- **Totals add up at every level.** A terminal includes its processes and its workers (terminals whose hc `parent` is this terminal), nested under it however deep. A worker whose parent has gone stays at the top level.
+- **Totals add up at every level.** A terminal includes its processes and its workers (terminals whose hc `parent` is this terminal, or whose `hc-pane.owner` label names it: the panes `hc-pane run` opens), nested under it however deep. A worker whose parent has gone stays at the top level.
 - **Click** a row to open or close it. **Expand all** opens everything. **Collapse** closes everything. On first load the spaces start open.
 - **Jump (↗ / eye):**
   - space: `space.select {id}`;
